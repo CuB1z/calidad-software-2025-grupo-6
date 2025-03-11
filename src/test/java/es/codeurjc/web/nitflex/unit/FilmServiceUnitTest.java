@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -18,12 +19,13 @@ import es.codeurjc.web.nitflex.model.Film;
 import es.codeurjc.web.nitflex.repository.FilmRepository;
 import es.codeurjc.web.nitflex.repository.UserRepository;
 import es.codeurjc.web.nitflex.service.FilmService;
+import es.codeurjc.web.nitflex.service.exceptions.FilmNotFoundException;
 import es.codeurjc.web.nitflex.utils.ImageUtils;
 
 /**
  * TASK 1 : Unit test for FilmService
  */
-public class FilmServiceTest {
+public class FilmServiceUnitTest {
 
     private FilmRepository filmRepository;
 
@@ -35,7 +37,7 @@ public class FilmServiceTest {
         filmRepository = mock(FilmRepository.class); // TODO: Mock the FilmRepository or use a real one
         UserRepository userRepository = mock(UserRepository.class); // TODO: Mock the UserRepository or use a real one
         ImageUtils imageUtils = mock(ImageUtils.class); // TODO: Mock the ImageUtils or use a real one
-        FilmMapper filmMapper = mock(FilmMapper.class); // TODO: Mock the FilmMapper or use a real one
+        FilmMapper filmMapper = Mappers.getMapper(FilmMapper.class);
 
         // Create an instance of FilmService with the mocked dependencies
         filmService = new FilmService(filmRepository, userRepository, imageUtils, filmMapper);
@@ -48,12 +50,11 @@ public class FilmServiceTest {
     @Test
     public void testSaveFilmWithEmptyImageAndTitle() {
         // Given
-        CreateFilmRequest film = new CreateFilmRequest("", "Description", 2024, "Action");
-        Blob imageField = null;
+        CreateFilmRequest film = new CreateFilmRequest("", "Description", 2024, "+18");
 
         // When
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            filmService.save(film, imageField);
+            filmService.save(film);
         });
 
         // Then
@@ -70,12 +71,12 @@ public class FilmServiceTest {
         long nonExistentFilmId = 999L;
 
         // When
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(FilmNotFoundException.class, () -> {
             filmService.delete(nonExistentFilmId);
         });
 
         // Then
-        assertEquals("Film with id " + nonExistentFilmId + " not found", exception.getMessage());
+        assertEquals("Film not found with id: " + nonExistentFilmId, exception.getMessage());
         verify(filmRepository, never()).deleteById(nonExistentFilmId);
     }
 }
