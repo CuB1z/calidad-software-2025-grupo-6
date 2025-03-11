@@ -1,8 +1,11 @@
 package es.codeurjc.web.nitflex.unit;
 
-import java.sql.Blob;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,10 +15,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import es.codeurjc.web.nitflex.dto.film.CreateFilmRequest;
 import es.codeurjc.web.nitflex.dto.film.FilmMapper;
 import es.codeurjc.web.nitflex.model.Film;
+import es.codeurjc.web.nitflex.model.User;
 import es.codeurjc.web.nitflex.repository.FilmRepository;
 import es.codeurjc.web.nitflex.repository.UserRepository;
 import es.codeurjc.web.nitflex.service.FilmService;
@@ -29,13 +34,15 @@ public class FilmServiceUnitTest {
 
     private FilmRepository filmRepository;
 
+    private UserRepository userRepository;
+
     private FilmService filmService;
 
     @BeforeEach
     public void setUp() {
         // Initialize the necessary components for the test
         filmRepository = mock(FilmRepository.class); // TODO: Mock the FilmRepository or use a real one
-        UserRepository userRepository = mock(UserRepository.class); // TODO: Mock the UserRepository or use a real one
+        userRepository = mock(UserRepository.class); // TODO: Mock the UserRepository or use a real one
         ImageUtils imageUtils = mock(ImageUtils.class); // TODO: Mock the ImageUtils or use a real one
         FilmMapper filmMapper = Mappers.getMapper(FilmMapper.class);
 
@@ -60,6 +67,35 @@ public class FilmServiceUnitTest {
         // Then
         assertEquals("The title is empty", exception.getMessage());
         verify(filmRepository, never()).save(any(Film.class));
+    }
+
+    /**
+     * 3. When an existing film is deleted using FilmService, it is removed from the repository and from the users' favorite films list
+     */
+    @Test
+    public void testDeleteExistingFilm() {
+        // Given
+        long existingFilmId = 1L;
+
+        Film existingFilm = mock(Film.class);
+        User user = mock(User.class);
+
+        List<Film> favoriteFilms = new ArrayList<>();
+        favoriteFilms.add(existingFilm);
+
+        when(existingFilm.getUsersThatLiked()).thenReturn(List.of(user));
+        when(filmRepository.findById(existingFilmId)).thenReturn(Optional.of(existingFilm));
+        when(user.getFavoriteFilms()).thenReturn(favoriteFilms);
+
+        // When
+        filmService.delete(existingFilmId);
+
+        // Then
+        verify(filmRepository).deleteById(existingFilmId);
+        verify(user).getFavoriteFilms();
+        verify(userRepository).save(user);
+        
+        assertFalse(favoriteFilms.contains(existingFilm));
     }
 
     /**
