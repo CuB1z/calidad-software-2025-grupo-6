@@ -24,7 +24,7 @@ import jakarta.transaction.Transactional;
 @Service
 public class FilmService {
 
-	private FilmRepository filmRepository;
+	private final FilmRepository filmRepository;
 
 	private UserRepository userRepository;
 
