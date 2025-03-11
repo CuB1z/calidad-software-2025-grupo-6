@@ -95,7 +95,7 @@ public class FilmServiceUnitTest {
         verify(user).getFavoriteFilms();
         verify(userRepository).save(user);
         
-        assertFalse(favoriteFilms.contains(existingFilm));
+        assertFalse(favoriteFilms.contains(existingFilm), "The film should not be in the user's favorite films list");
     }
 
     /**
