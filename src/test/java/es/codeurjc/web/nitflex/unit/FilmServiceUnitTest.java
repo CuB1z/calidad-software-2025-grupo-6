@@ -41,8 +41,8 @@ public class FilmServiceUnitTest {
     @BeforeEach
     public void setUp() {
         // Initialize the necessary components for the test
-        filmRepository = mock(FilmRepository.class); // TODO: Mock the FilmRepository or use a real one
-        userRepository = mock(UserRepository.class); // TODO: Mock the UserRepository or use a real one
+        filmRepository = mock(FilmRepository.class);
+        userRepository = mock(UserRepository.class);
         ImageUtils imageUtils = mock(ImageUtils.class); // TODO: Mock the ImageUtils or use a real one
         FilmMapper filmMapper = Mappers.getMapper(FilmMapper.class);
 
@@ -98,11 +98,11 @@ public class FilmServiceUnitTest {
         List<Film> favoriteFilms = new ArrayList<>();
         favoriteFilms.add(existingFilm);
 
+        // When
         when(existingFilm.getUsersThatLiked()).thenReturn(List.of(user));
         when(filmRepository.findById(existingFilmId)).thenReturn(Optional.of(existingFilm));
         when(user.getFavoriteFilms()).thenReturn(favoriteFilms);
-
-        // When
+        
         filmService.delete(existingFilmId);
 
         // Then

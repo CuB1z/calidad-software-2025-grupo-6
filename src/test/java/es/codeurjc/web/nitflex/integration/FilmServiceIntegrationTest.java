@@ -1,18 +1,16 @@
 package es.codeurjc.web.nitflex.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Optional;
 
-import es.codeurjc.web.nitflex.dto.film.FilmMapper;
 import es.codeurjc.web.nitflex.model.Film;
 import es.codeurjc.web.nitflex.model.User;
 import es.codeurjc.web.nitflex.repository.FilmRepository;
 import es.codeurjc.web.nitflex.repository.UserRepository;
-import es.codeurjc.web.nitflex.service.FavoriteFilmService;
-import es.codeurjc.web.nitflex.service.UserComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +37,6 @@ public class FilmServiceIntegrationTest {
     private UserRepository userRepository;
 
     //private List<User> usersThatLikeFilms;
-    @Autowired
-    private FilmMapper filmMapper;
     @Autowired
     private FilmRepository filmRepository;
 
@@ -108,24 +104,31 @@ public class FilmServiceIntegrationTest {
         CreateFilmRequest film = new CreateFilmRequest("Title", "Description", 2024, "+18");
         MultipartFile imageField = ImageTestUtils.createSampleImage();
         FilmDTO filmWithImage = filmService.save(film, imageField);
-        Optional<FilmDTO> optionalFilm = filmService.findOne(filmWithImage.id());
+
+        Optional<Film> optionalFilm = filmRepository.findById(filmWithImage.id());
         assertTrue(optionalFilm.isPresent(), "Film should be present in the database");
-        FilmDTO oldFilm = optionalFilm.get();
+        Film oldFilm = optionalFilm.get();
+
         String newTitle = "New Title";
         String newSynopsis = "New Synopsis";
 
         // When
-        FilmSimpleDTO newFilm = new FilmSimpleDTO(oldFilm.id(), newTitle, newSynopsis, oldFilm.releaseYear(), oldFilm.ageRating());
-        filmService.update(filmWithImage.id(), newFilm);
+        FilmSimpleDTO newFilm = new FilmSimpleDTO(oldFilm.getId(), newTitle, newSynopsis, oldFilm.getReleaseYear(), oldFilm.getAgeRating());
+        FilmDTO newFilmDTO = filmService.update(filmWithImage.id(), newFilm);
 
         // Then
-        Optional<FilmDTO> updatedFilmOptional = filmService.findOne(filmWithImage.id());
+        Optional<Film> updatedFilmOptional = filmRepository.findById(newFilmDTO.id());
         assertTrue(updatedFilmOptional.isPresent(), "Updated film should be present in the database");
-        FilmDTO updatedFilm = updatedFilmOptional.get();
+        Film updatedFilm = updatedFilmOptional.get();
 
-        assertEquals(newTitle, updatedFilm.title(), "Film title should be updated");
-        assertEquals(newSynopsis, updatedFilm.synopsis(), "Film synopsis should be updated");
-        // TODO: Check that the image does not change - Diego
+        assertEquals(newTitle, updatedFilm.getTitle(), "Film title should be updated");
+        assertEquals(newSynopsis, updatedFilm.getSynopsis(), "Film synopsis should be updated");
+
+        try {
+            assertTrue(ImageTestUtils.areSameBlob(oldFilm.getPosterFile(), updatedFilm.getPosterFile()), "Image should not change");
+        } catch(Exception e) {
+            fail("Error comparing images");
+        }
     }
 
     /**
