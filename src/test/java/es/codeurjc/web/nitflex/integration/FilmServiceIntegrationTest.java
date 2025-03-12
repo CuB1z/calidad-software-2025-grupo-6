@@ -25,7 +25,29 @@ public class FilmServiceIntegrationTest {
 
     @Autowired
     private FilmService filmService;
-    
+
+    /**
+     * 1. When a film with valid title is saved using FilmService, it is saved in the repository and a movie is returned
+     */
+    @Test
+    @Transactional
+    public void testSaveFilmWithValidTitle() {
+        // Given
+        CreateFilmRequest film = new CreateFilmRequest("Title", "Description", 2024, "+18");
+
+        // When
+        FilmDTO savedFilm = filmService.save(film);
+
+        // Then
+        Optional<FilmDTO> optionalFilm = filmService.findOne(savedFilm.id());
+        assertTrue(optionalFilm.isPresent(), "Film should be present in the database");
+        FilmDTO filmFromDB = optionalFilm.get();
+        assertEquals(film.title(), filmFromDB.title(), "Film title should be the same");
+        assertEquals(film.synopsis(), filmFromDB.synopsis(), "Film synopsis should be the same");
+        assertEquals(film.releaseYear(), filmFromDB.releaseYear(), "Film release year should be the same");
+        assertEquals(film.ageRating(), filmFromDB.ageRating(), "Film age rating should be the same");
+    }
+
     /**
      * 2. When the 'title' and 'synopsis' fields of a film (WITHOUT image) are updated with a valid title through FilmService, the changes are saved in the database and the list of users who have marked it as favorite is maintained
      */    
