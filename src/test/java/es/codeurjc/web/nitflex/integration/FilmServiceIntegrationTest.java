@@ -54,7 +54,6 @@ public class FilmServiceIntegrationTest {
      * 1. When a film with valid title is saved using FilmService, it is saved in the repository and a movie is returned
      */
     @Test
-    @Transactional
     public void testSaveFilmWithValidTitle() {
         // Given
         CreateFilmRequest film = new CreateFilmRequest("Title", "Description", 2024, "+18");
@@ -76,7 +75,6 @@ public class FilmServiceIntegrationTest {
      * 2. When the 'title' and 'synopsis' fields of a film (WITHOUT image) are updated with a valid title through FilmService, the changes are saved in the database and the list of users who have marked it as favorite is maintained
      */
     @Test
-    @Transactional
     public void testUpdateFilmWithNoImage() {
         // Given
         CreateFilmRequest film = new CreateFilmRequest("Title", "Description", 2024, "+18");
@@ -105,7 +103,6 @@ public class FilmServiceIntegrationTest {
      * 3. When the 'title' and 'synopsis' fields of a film (WITH image) are updated with a valid title through FilmService, the changes are saved in the database and the image does not change
      */
     @Test
-    @Transactional
     public void testUpdateFilmWithImage() {
         // Given
         CreateFilmRequest film = new CreateFilmRequest("Title", "Description", 2024, "+18");
@@ -135,28 +132,26 @@ public class FilmServiceIntegrationTest {
      * 4. When a film is deleted using FilmService, it is removed from the repository and from the users' favorite films list
      */
     @Test
-    @Transactional
     public void testDeleteExistingFilm() {
         // Given
         CreateFilmRequest film = new CreateFilmRequest("Title", "Description", 2024, "+18");
         FilmDTO savedFilm = filmService.save(film);
+        
         Optional<Film> filmObjectOptional = filmRepository.findById(savedFilm.id());
         assertTrue(filmObjectOptional.isPresent(), "Film should be present in the database");
         Film filmObject = filmObjectOptional.get();
-        Optional<FilmDTO> optionalFilm = filmService.findOne(savedFilm.id());
-        assertTrue(optionalFilm.isPresent(), "Film should be present in the database");
-        FilmDTO filmToDelete = optionalFilm.get();
 
         User user = new User("username", "username@mail.net");
         user.getFavoriteFilms().add(filmObject);
         userRepository.save(user);
-        assertTrue(user.getFavoriteFilms().contains(filmObject));
+
+        assertTrue(userRepository.findById(user.getId()).get().getFavoriteFilms().contains(filmObject));
 
         // When
-        filmService.delete(filmToDelete.id());
+        filmService.delete(filmObject.getId());
 
         // Then
-        Optional<FilmDTO> deletedFilm = filmService.findOne(filmToDelete.id());
+        Optional<FilmDTO> deletedFilm = filmService.findOne(filmObject.getId());
         assertTrue(deletedFilm.isEmpty(), "Film should not be present in the database");
         Optional<User> findUser = userRepository.findById(user.getId());
         assertTrue(findUser.isPresent(), "User should be present in the database");
