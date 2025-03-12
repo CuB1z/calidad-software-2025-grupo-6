@@ -1,25 +1,31 @@
 package es.codeurjc.web.nitflex.e2e;
 
-import es.codeurjc.web.nitflex.Application;
-import es.codeurjc.web.nitflex.model.User;
-import es.codeurjc.web.nitflex.repository.UserRepository;
+import java.time.Duration;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-import java.time.Duration;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
+import es.codeurjc.web.nitflex.Application;
+import es.codeurjc.web.nitflex.model.User;
+import es.codeurjc.web.nitflex.repository.UserRepository;
 
 
 /**
@@ -35,7 +41,6 @@ public class FilmServiceE2ETest {
 
     private WebDriverWait wait;
 
-
     @Autowired
     UserRepository userRepository;
 
@@ -50,9 +55,7 @@ public class FilmServiceE2ETest {
 
     @AfterEach
     public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
+        if (driver != null) driver.quit();
         wait = null;
         userRepository.deleteAll();
     }
@@ -70,13 +73,7 @@ public class FilmServiceE2ETest {
         String description = "Description";
         int releaseYear = 2024;
         String ageRating = "+18";
-        driver.findElement(By.name("title")).sendKeys(title);
-        WebElement element = driver.findElement(By.name("releaseYear"));
-        element.clear();
-        element.sendKeys(String.valueOf(releaseYear));
-        driver.findElement(By.name("synopsis")).sendKeys(description);
-        new Select(driver.findElement(By.name("ageRating"))).selectByValue(ageRating);
-        driver.findElement(By.id("Save")).click();
+        addFilmToForm(title, description, releaseYear, ageRating);
 
         //Then
         wait.until(presenceOfElementLocated(By.id("filmDetail")));
@@ -84,6 +81,31 @@ public class FilmServiceE2ETest {
         assertThat(driver.findElement(By.id("film-title")).getText()).isEqualTo(title);
         assertThat(driver.findElement(By.id("film-releaseYear")).getText()).isEqualTo(String.valueOf(releaseYear));
         //TODO: add id to agerequirement and check, ask michel
+    }
+
+    /**
+     * 2. When adding a new film without a title, we expect an error message to be displayed and that the film does not appear on the main page.
+     */
+    @Test
+    public void testAddFilmWithoutTitle() {
+        //Given
+        driver.get("http://localhost:" + this.port + "/films/new");
+
+        //When
+        addFilmToForm("", "Description", 2024, "+18");
+
+        //Then
+        wait.until(presenceOfElementLocated(By.id("new-film")));
+        assertNotNull(driver.findElement(By.id("error-list")), "There is no error message");
+        // Go to the main page
+        driver.get("http://localhost:" + this.port + "/");
+        wait.until(presenceOfElementLocated(By.id("film-list")));
+        List<WebElement> films = driver.findElements(By.className("film-name"));
+        for (WebElement film : films) {
+            if (film.getText().isEmpty()) {
+                fail("Film with empty title should not be present in the list");
+            }
+        }
     }
 
 
@@ -99,6 +121,17 @@ public class FilmServiceE2ETest {
      */
     @Test
     public void testEditFilm() {
+
+    }
+
+    private void addFilmToForm(String title, String description, int releaseYear, String ageRating) {
+        driver.findElement(By.name("title")).sendKeys(title);
+        WebElement element = driver.findElement(By.name("releaseYear"));
+        element.clear();
+        element.sendKeys(String.valueOf(releaseYear));
+        driver.findElement(By.name("synopsis")).sendKeys(description);
+        new Select(driver.findElement(By.name("ageRating"))).selectByValue(ageRating);
+        driver.findElement(By.id("Save")).click();
     }
 
 }
