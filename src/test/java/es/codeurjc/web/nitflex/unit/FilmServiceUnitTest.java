@@ -50,6 +50,21 @@ public class FilmServiceUnitTest {
         filmService = new FilmService(filmRepository, userRepository, imageUtils, filmMapper);
     }
 
+    /**
+     * 1. When a film (without image) and a valid title is saved using FilmService, it is saved in the repository
+     */
+    @Test
+    public void testSaveFilmWithValidTitle() {
+        // Given
+        CreateFilmRequest film = new CreateFilmRequest("Title", "Description", 2024, "+18");
+
+        // When
+        filmService.save(film);
+
+        // Then
+        verify(filmRepository).save(any(Film.class));
+    }
+
 
     /**
      * 2. When a film (without image) and an empty title are saved using FilmService, it is NOT saved in the repository and an exception is thrown
