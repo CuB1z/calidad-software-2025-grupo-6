@@ -58,7 +58,7 @@ public class FilmServiceE2ETest {
     }
 
     /**
-     * When a new film (without image) is added, we expect the film to appear in the screen
+     * 1. When a new film (without image) is added, we expect the film to appear in the screen
      */
     @Test
     public void testAddFilm() throws InterruptedException {
@@ -83,6 +83,7 @@ public class FilmServiceE2ETest {
         assertThat(driver.findElement(By.id("film-synopsis")).getText()).isEqualTo(description);
         assertThat(driver.findElement(By.id("film-title")).getText()).isEqualTo(title);
         assertThat(driver.findElement(By.id("film-releaseYear")).getText()).isEqualTo(String.valueOf(releaseYear));
+        //TODO: add id to agerequirement and check, ask michel
     }
 
 
