@@ -6,9 +6,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +31,8 @@ import es.codeurjc.web.nitflex.repository.UserRepository;
  */
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class FilmServiceE2ETest {
+
+    private static String BASE_URL = "http://localhost:";
 
     @LocalServerPort
     private int port;
@@ -66,7 +66,7 @@ public class FilmServiceE2ETest {
     @Test
     public void testAddFilm() throws InterruptedException {
         //Given
-        driver.get("http://localhost:" + this.port + "/films/new");
+        driver.get(String.format("%s%d/films/new", BASE_URL, this.port));
 
         //When
         String title = "Title";
@@ -89,7 +89,7 @@ public class FilmServiceE2ETest {
     @Test
     public void testAddFilmWithoutTitle() {
         //Given
-        driver.get("http://localhost:" + this.port + "/films/new");
+        driver.get(String.format("%s%d/films/new", BASE_URL, this.port));
 
         //When
         addFilmToForm("", "Description", 2024, "+18");
@@ -98,7 +98,7 @@ public class FilmServiceE2ETest {
         wait.until(presenceOfElementLocated(By.id("new-film")));
         assertNotNull(driver.findElement(By.id("error-list")), "There is no error message");
         // Go to the main page
-        driver.get("http://localhost:" + this.port + "/");
+        driver.get(String.format("%s%d/", BASE_URL, this.port));
         wait.until(presenceOfElementLocated(By.id("film-list")));
         List<WebElement> films = driver.findElements(By.className("film-name"));
         for (WebElement film : films) {
@@ -114,6 +114,24 @@ public class FilmServiceE2ETest {
      */
     @Test
     public void testAddAndDeleteFilm() {
+        //Given
+        driver.get(String.format("%s%d/films/new", BASE_URL, this.port));
+
+        //When
+        addFilmToForm("NewTitle", "Description", 2024, "+18");
+        wait.until(presenceOfElementLocated(By.id("remove-film")));
+        driver.findElement(By.id("remove-film")).click();
+
+        //Then
+        wait.until(presenceOfElementLocated(By.id("all-films")));
+        driver.findElement(By.id("all-films")).click();
+        wait.until(presenceOfElementLocated(By.id("film-list")));
+        List<WebElement> films = driver.findElements(By.className("film-title"));
+        for (WebElement film : films) {
+            if (film.getText().equals("NewTitle")) {
+                fail("Film should not be present in the list");
+            }
+        }
     }
 
     /**
