@@ -15,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.codeurjc.web.nitflex.ImageTestUtils;
@@ -124,6 +123,7 @@ public class FilmServiceIntegrationTest {
         assertEquals(newTitle, updatedFilm.getTitle(), "Film title should be updated");
         assertEquals(newSynopsis, updatedFilm.getSynopsis(), "Film synopsis should be updated");
 
+        // TODO: Check areSameBlob exception
         try {
             assertTrue(ImageTestUtils.areSameBlob(oldFilm.getPosterFile(), updatedFilm.getPosterFile()), "Image should not change");
         } catch(Exception e) {

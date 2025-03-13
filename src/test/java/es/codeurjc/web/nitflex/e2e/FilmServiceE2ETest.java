@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,8 +101,7 @@ public class FilmServiceE2ETest {
         // Go to the main page
         driver.get(String.format("%s%d/", BASE_URL, this.port));
         wait.until(presenceOfElementLocated(By.id("film-list")));
-        List<WebElement> films = driver.findElements(By.className("film-name"));
-        for (WebElement film : films) {
+        for (WebElement film : getFilms()) {
             if (film.getText().isEmpty()) {
                 fail("Film with empty title should not be present in the list");
             }
@@ -126,8 +126,7 @@ public class FilmServiceE2ETest {
         wait.until(presenceOfElementLocated(By.id("all-films")));
         driver.findElement(By.id("all-films")).click();
         wait.until(presenceOfElementLocated(By.id("film-list")));
-        List<WebElement> films = driver.findElements(By.className("film-title"));
-        for (WebElement film : films) {
+        for (WebElement film : getFilms()) {
             if (film.getText().equals("NewTitle")) {
                 fail("Film should not be present in the list");
             }
@@ -139,6 +138,34 @@ public class FilmServiceE2ETest {
      */
     @Test
     public void testEditFilm() {
+        // Given
+        String addToTittle = " - part 2";
+        driver.get(String.format("%s%d/films/new", BASE_URL, this.port));
+
+        // When
+        String title = "Title";
+
+        addFilmToForm(title, "Description", 2024, "+18");
+        wait.until(presenceOfElementLocated(By.id("edit-film")));
+        driver.findElement(By.id("edit-film")).click();
+        wait.until(presenceOfElementLocated(By.id("new-film")));
+        driver.findElement(By.name("title")).sendKeys(addToTittle);
+        driver.findElement(By.id("Save")).click();
+
+        // Then
+        wait.until(presenceOfElementLocated(By.id("all-films")));
+        driver.findElement(By.id("all-films")).click();
+        wait.until(presenceOfElementLocated(By.id("film-list")));
+
+        boolean found = false;
+        for (WebElement film : getFilms()) {
+            if (film.getText().equals(String.format("%s%s", title, addToTittle))) {
+                found = true;
+                break;
+            }
+        }
+
+        assertTrue(found, "Film title should be updated");
 
     }
 
@@ -152,4 +179,7 @@ public class FilmServiceE2ETest {
         driver.findElement(By.id("Save")).click();
     }
 
+    private List<WebElement> getFilms() {
+        return driver.findElements(By.className("film-title"));
+    }
 }
