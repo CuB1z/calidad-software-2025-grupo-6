@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -43,7 +42,7 @@ public class FilmServiceUnitTest {
         // Initialize the necessary components for the test
         filmRepository = mock(FilmRepository.class);
         userRepository = mock(UserRepository.class);
-        ImageUtils imageUtils = mock(ImageUtils.class); // TODO: Mock the ImageUtils or use a real one
+        ImageUtils imageUtils = new ImageUtils();
         FilmMapper filmMapper = Mappers.getMapper(FilmMapper.class);
 
         // Create an instance of FilmService with the mocked dependencies
@@ -91,10 +90,8 @@ public class FilmServiceUnitTest {
     public void testDeleteExistingFilm() {
         // Given
         long existingFilmId = 1L;
-
         Film existingFilm = mock(Film.class);
         User user = mock(User.class);
-
         List<Film> favoriteFilms = new ArrayList<>();
         favoriteFilms.add(existingFilm);
 

@@ -1,16 +1,11 @@
 package es.codeurjc.web.nitflex.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import java.util.Optional;
 
-import es.codeurjc.web.nitflex.model.Film;
-import es.codeurjc.web.nitflex.model.User;
-import es.codeurjc.web.nitflex.repository.FilmRepository;
-import es.codeurjc.web.nitflex.repository.UserRepository;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +16,10 @@ import es.codeurjc.web.nitflex.ImageTestUtils;
 import es.codeurjc.web.nitflex.dto.film.CreateFilmRequest;
 import es.codeurjc.web.nitflex.dto.film.FilmDTO;
 import es.codeurjc.web.nitflex.dto.film.FilmSimpleDTO;
+import es.codeurjc.web.nitflex.model.Film;
+import es.codeurjc.web.nitflex.model.User;
+import es.codeurjc.web.nitflex.repository.FilmRepository;
+import es.codeurjc.web.nitflex.repository.UserRepository;
 import es.codeurjc.web.nitflex.service.FilmService;
 
 /**
@@ -124,11 +123,9 @@ public class FilmServiceIntegrationTest {
         assertEquals(newSynopsis, updatedFilm.getSynopsis(), "Film synopsis should be updated");
 
         // TODO: Check areSameBlob exception
-        try {
-            assertTrue(ImageTestUtils.areSameBlob(oldFilm.getPosterFile(), updatedFilm.getPosterFile()), "Image should not change");
-        } catch(Exception e) {
-            fail("Error comparing images");
-        }
+        assertDoesNotThrow(() -> 
+            assertTrue(ImageTestUtils.areSameBlob(oldFilm.getPosterFile(), updatedFilm.getPosterFile()), "Image should not change")
+        );
     }
 
     /**
@@ -160,7 +157,5 @@ public class FilmServiceIntegrationTest {
         assertTrue(findUser.isPresent(), "User should be present in the database");
         user = findUser.get();
         assertFalse(user.getFavoriteFilms().contains(filmObject));
-
     }
-
 }

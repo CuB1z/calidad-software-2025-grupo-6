@@ -5,10 +5,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -33,7 +31,7 @@ import es.codeurjc.web.nitflex.repository.UserRepository;
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class FilmServiceE2ETest {
 
-    private static String BASE_URL = "http://localhost:";
+    private static final String BASE_URL = "http://localhost:";
 
     @LocalServerPort
     private int port;
@@ -67,7 +65,7 @@ public class FilmServiceE2ETest {
     @Test
     public void testAddFilm() throws InterruptedException {
         //Given
-        driver.get(String.format("%s%d/films/new", BASE_URL, this.port));
+        driver.get(BASE_URL + this.port + "/films/new");
 
         //When
         String title = "Title";
@@ -90,7 +88,7 @@ public class FilmServiceE2ETest {
     @Test
     public void testAddFilmWithoutTitle() {
         //Given
-        driver.get(String.format("%s%d/films/new", BASE_URL, this.port));
+        driver.get(BASE_URL + this.port + "/films/new");
 
         //When
         addFilmToForm("", "Description", 2024, "+18");
@@ -99,13 +97,10 @@ public class FilmServiceE2ETest {
         wait.until(presenceOfElementLocated(By.id("new-film")));
         assertNotNull(driver.findElement(By.id("error-list")), "There is no error message");
         // Go to the main page
-        driver.get(String.format("%s%d/", BASE_URL, this.port));
+        driver.get(BASE_URL + this.port + "/");
         wait.until(presenceOfElementLocated(By.id("film-list")));
-        for (WebElement film : getFilms()) {
-            if (film.getText().isEmpty()) {
-                fail("Film with empty title should not be present in the list");
-            }
-        }
+        assertTrue(getFilms().stream().allMatch(film -> !film.getText().isEmpty()),
+                   "Film with empty title should not be present in the list");
     }
 
 
@@ -115,7 +110,7 @@ public class FilmServiceE2ETest {
     @Test
     public void testAddAndDeleteFilm() {
         //Given
-        driver.get(String.format("%s%d/films/new", BASE_URL, this.port));
+        driver.get(BASE_URL + this.port + "/films/new");
 
         //When
         addFilmToForm("NewTitle", "Description", 2024, "+18");
@@ -125,12 +120,10 @@ public class FilmServiceE2ETest {
         //Then
         wait.until(presenceOfElementLocated(By.id("all-films")));
         driver.findElement(By.id("all-films")).click();
+
         wait.until(presenceOfElementLocated(By.id("film-list")));
-        for (WebElement film : getFilms()) {
-            if (film.getText().equals("NewTitle")) {
-                fail("Film should not be present in the list");
-            }
-        }
+        assertTrue(getFilms().stream().noneMatch(film -> film.getText().equals("NewTitle")),
+                   "Film should not be present in the list");
     }
 
     /**
@@ -139,12 +132,11 @@ public class FilmServiceE2ETest {
     @Test
     public void testEditFilm() {
         // Given
+        String title = "Title";
         String addToTittle = " - part 2";
-        driver.get(String.format("%s%d/films/new", BASE_URL, this.port));
+        driver.get(BASE_URL + this.port + "/films/new");
 
         // When
-        String title = "Title";
-
         addFilmToForm(title, "Description", 2024, "+18");
         wait.until(presenceOfElementLocated(By.id("edit-film")));
         driver.findElement(By.id("edit-film")).click();
@@ -155,17 +147,10 @@ public class FilmServiceE2ETest {
         // Then
         wait.until(presenceOfElementLocated(By.id("all-films")));
         driver.findElement(By.id("all-films")).click();
+
         wait.until(presenceOfElementLocated(By.id("film-list")));
-
-        boolean found = false;
-        for (WebElement film : getFilms()) {
-            if (film.getText().equals(String.format("%s%s", title, addToTittle))) {
-                found = true;
-                break;
-            }
-        }
-
-        assertTrue(found, "Film title should be updated");
+        assertTrue(getFilms().stream().anyMatch(film -> film.getText().equals(title + addToTittle)), 
+                "Film title should be updated");
 
     }
 
