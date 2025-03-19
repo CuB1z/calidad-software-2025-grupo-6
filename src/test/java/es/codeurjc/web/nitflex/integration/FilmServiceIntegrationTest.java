@@ -122,7 +122,6 @@ public class FilmServiceIntegrationTest {
         assertEquals(newTitle, updatedFilm.getTitle(), "Film title should be updated");
         assertEquals(newSynopsis, updatedFilm.getSynopsis(), "Film synopsis should be updated");
 
-        // TODO: Check areSameBlob exception
         assertDoesNotThrow(() -> 
             assertTrue(ImageTestUtils.areSameBlob(oldFilm.getPosterFile(), updatedFilm.getPosterFile()), "Image should not change")
         );
