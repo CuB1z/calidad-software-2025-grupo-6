@@ -3,11 +3,14 @@ package es.codeurjc.web.nitflex.rest;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import es.codeurjc.web.nitflex.Application;
 import es.codeurjc.web.nitflex.dto.film.FilmSimpleDTO;
+import es.codeurjc.web.nitflex.model.User;
+import es.codeurjc.web.nitflex.repository.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import net.minidev.json.JSONObject;
@@ -19,6 +22,9 @@ import net.minidev.json.JSONObject;
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class FilmServiceRestTest {
 
+    @Autowired
+    private UserRepository userRepository;
+
     private static final String BASE_URL = "http://localhost:";
 
     @LocalServerPort
@@ -26,6 +32,7 @@ public class FilmServiceRestTest {
 
     @BeforeEach
     public void setup() {
+        userRepository.save(new User("Test User", "test@gmail.com"));
         RestAssured.baseURI = BASE_URL + port;
     }
 

@@ -33,8 +33,7 @@ public class DatabaseInitializer {
 	@PostConstruct
 	public void init() throws IOException {
 
-		//if(!isRunningTest()) { TODO ask why
-		if (true) {
+		if(!isRunningTest()) {
 			User michel = new User("Michel","michel.maes@urjc.es");
 			User raul = new User("Raúl","raul@urjc.es");
 			User sergio = new User("Sergio","sergio@urjc.es");
