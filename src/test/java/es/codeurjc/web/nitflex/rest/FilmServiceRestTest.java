@@ -30,13 +30,13 @@ public class FilmServiceRestTest {
         newFilm.put("title", "New Film Title");
         newFilm.put("synopsis", "This is a synopsis of the new film.");
         newFilm.put("releaseYear", 2025);
-        newFilm.put("ageRating", "PG-13");
+        newFilm.put("ageRating", "+18");
 
         // Verify the film was created
-        Long filmId = RestAssured
+        Integer filmId = RestAssured
             .given()
                 .contentType(ContentType.JSON)
-                .body(newFilm.toString())
+                .body(newFilm.toJSONString())
             .when()
                 .post("/api/films/")
             .then()
@@ -50,7 +50,7 @@ public class FilmServiceRestTest {
 
         // Edit the film
         FilmSimpleDTO updatedFilm = new FilmSimpleDTO(
-            filmId,
+            (long) filmId,
             "New Film Title - parte 2",
             "This is a synopsis of the new film.",
             2025,
