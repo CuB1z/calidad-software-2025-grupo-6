@@ -37,6 +37,49 @@ public class FilmServiceRestTest {
     }
 
     /**
+     * When a new film is added without an image, we expect that the image is obtainable through its id
+     */
+    @Test
+    public void testAddFilmWithoutImage() {
+        // Create a new film
+        JSONObject newFilm = new JSONObject();
+        newFilm.put("title", "New Film Title");
+        newFilm.put("synopsis", "This is a synopsis of the new film.");
+        newFilm.put("releaseYear", 2025);
+        newFilm.put("ageRating", "+18");
+
+        // Verify the film was created
+        Integer filmId = RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+                .body(newFilm.toJSONString())
+            .when()
+                .post("/api/films/")
+            .then()
+                .statusCode(201)
+                .body("title", Matchers.equalTo(newFilm.get("title")))
+                .body("synopsis", Matchers.equalTo(newFilm.get("synopsis")))
+                .body("releaseYear", Matchers.equalTo(newFilm.get("releaseYear")))
+                .body("ageRating", Matchers.equalTo(newFilm.get("ageRating")))
+                .extract()
+                .path("id");
+
+        // Verify the film is obtainable through its id
+        RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+            .when()
+                .get("/api/films/" + filmId)
+            .then()
+                .statusCode(200)
+                .body("id", Matchers.equalTo(filmId))
+                .body("title", Matchers.equalTo(newFilm.get("title")))
+                .body("synopsis", Matchers.equalTo(newFilm.get("synopsis")))
+                .body("releaseYear", Matchers.equalTo(newFilm.get("releaseYear")))
+                .body("ageRating", Matchers.equalTo(newFilm.get("ageRating")));
+    }
+
+    /**
      * 2. When a new film is added without a title, we expect that an appropriate error message is displayed
      */
     @Test
@@ -111,5 +154,53 @@ public class FilmServiceRestTest {
                 .statusCode(200)
                 .body("id", Matchers.equalTo(filmId))
                 .body("title", Matchers.equalTo(updatedFilm.title()));        
+    }
+
+    /**
+     * 4. When a new film is added and then deleted, we verify that the film is no longer obtainable
+     */
+    @Test
+    public void testAddAndDeleteFilm() {
+
+        // Create a new film
+        JSONObject newFilm = new JSONObject();
+        newFilm.put("title", "New Film Title");
+        newFilm.put("synopsis", "This is a synopsis of the new film.");
+        newFilm.put("releaseYear", 2025);
+        newFilm.put("ageRating", "+18");
+
+        // Verify the film was created
+        Integer filmId = RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+                .body(newFilm.toJSONString())
+            .when()
+                .post("/api/films/")
+            .then()
+                .statusCode(201)
+                .body("title", Matchers.equalTo(newFilm.get("title")))
+                .body("synopsis", Matchers.equalTo(newFilm.get("synopsis")))
+                .body("releaseYear", Matchers.equalTo(newFilm.get("releaseYear")))
+                .body("ageRating", Matchers.equalTo(newFilm.get("ageRating")))
+                .extract()
+                .path("id");
+
+        // Delete the film
+        RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+            .when()
+                .delete("/api/films/" + filmId)
+            .then()
+                .statusCode(204);
+
+        // Verify the film is no longer obtainable
+        RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+            .when()
+                .get("/api/films/" + filmId)
+            .then()
+                .statusCode(404);
     }
 }
