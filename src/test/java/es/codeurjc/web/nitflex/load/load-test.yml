@@ -6,6 +6,7 @@ config:
 
   plugins:
     expect: {}
+    ensure: {}
   
   payload:
     path: "films.csv"
@@ -20,6 +21,10 @@ config:
       phases:
         - duration: 40
           arrivalRate: 5
+      ensure:
+        maxErrorRate: 0
+        p95:
+          max: 100
 
     staging:
       http:
@@ -36,45 +41,56 @@ config:
           arrivalRate: 50
           name: "Load test"
       ensure:
-        
+        maxErrorRate: 0
+        p95:
+          max: 300
         
 scenarios:
   - name: "Scenario 1"
     weight: 70
-    before:
-      - post:
-          url: "/auth/login"
-          json:
-            username: "Patxi"
-            password: "pass"
+    flow:
+      - get:
+          url: "/films/"
           capture:
-            - json: "$.token"
-              as: organizerToken
-      - post:
-          url: "/events/"
-          headers:
-            Authorization: "Bearer {{ organizerToken }}"
-          json:
-            name: "Evento de prueba"
-            description: "Prueba de carga"
-            date: "2025-06-01T20:00:00.000Z"
-            price: 19.99
-            max_capacity: 50
-          capture:
-            - json: "$.id"
-              as: eventId
+            - json: "$[0].id"
+              as: "filmId"
+      - get:
+          url: "/films/{{ filmId }}"
+
+  - name: "Scenario 2"
+    weight: 20
     flow:
       - post:
-          url: "/auth/login"
+          url: "/films/"
           json:
-            username: "{{ username }}"
-            password: "{{ password }}"
+            title: "{{ title }}"
+            synopsis: "{{ synopsis }}"
+            releaseYear: "{{ releaseYear }}"
+            ageRating: "{{ ageRating }}"
           capture:
-            - json: "$.token"
-              as: customerToken
+            - json: "$.id"
+              as: "filmId"
+      - get:
+          url: "/films/{{ filmId }}"
+
+  - name: "Scenario 3"
+    weight: 10
+    flow:
       - post:
-          url: "/tickets/?eventId={{ eventId }}"
-          headers:
-            Authorization: "Bearer {{ customerToken }}"
+          url: "/films/"
+          json:
+            title: "{{ title }}"
+            synopsis: "{{ synopsis }}"
+            releaseYear: "{{ releaseYear }}"
+            ageRating: "{{ ageRating }}"
+          capture:
+            - json: "$.id"
+              as: "filmId"
+      - get:
+          url: "/films/{{ filmId }}"
+      - delete:
+          url: "/films/{{ filmId }}"
+      - get:
+          url: "/films/{{ filmId }}"
           expect:
-            - statusCode: 201
+            - statusCode: 404
