@@ -23,8 +23,8 @@ config:
           arrivalRate: 5
       ensure:
         maxErrorRate: 0
-        p95:
-          max: 100
+        thresholds:
+          - "http.response_time.p95": 100
 
     staging:
       http:
@@ -42,11 +42,11 @@ config:
           name: "Load test"
       ensure:
         maxErrorRate: 0
-        p95:
-          max: 300
+        thresholds:
+          - "http.response_time.p95": 300
         
 scenarios:
-  - name: "Scenario 1"
+  - name: "Scenario 1: Get all films and retrieve the first one"
     weight: 70
     flow:
       - get:
@@ -57,7 +57,7 @@ scenarios:
       - get:
           url: "/films/{{ filmId }}"
 
-  - name: "Scenario 2"
+  - name: "Scenario 2: Create a film and retrieve it"
     weight: 20
     flow:
       - post:
@@ -73,7 +73,7 @@ scenarios:
       - get:
           url: "/films/{{ filmId }}"
 
-  - name: "Scenario 3"
+  - name: "Scenario 3: Create, retrieve and delete a film"
     weight: 10
     flow:
       - post:
