@@ -1,0 +1,80 @@
+config:
+  target: "http://localhost:8080/api"
+
+  tls:
+    rejectUnauthorized: false
+
+  plugins:
+    expect: {}
+  
+  payload:
+    path: "films.csv"
+    fields:
+      - "title"
+      - "synopsis"
+      - "releaseYear"
+      - "ageRating"
+
+  environments:
+    local:
+      phases:
+        - duration: 40
+          arrivalRate: 5
+
+    staging:
+      http:
+        pool: 8
+      phases:
+        - duration: 40
+          arrivalRate: 10
+          rampTo: 50
+          name: "Warm Up"
+
+        - pause: 30
+
+        - duration: 300
+          arrivalRate: 50
+          name: "Load test"
+      ensure:
+        
+        
+scenarios:
+  - name: "Scenario 1"
+    weight: 70
+    before:
+      - post:
+          url: "/auth/login"
+          json:
+            username: "Patxi"
+            password: "pass"
+          capture:
+            - json: "$.token"
+              as: organizerToken
+      - post:
+          url: "/events/"
+          headers:
+            Authorization: "Bearer {{ organizerToken }}"
+          json:
+            name: "Evento de prueba"
+            description: "Prueba de carga"
+            date: "2025-06-01T20:00:00.000Z"
+            price: 19.99
+            max_capacity: 50
+          capture:
+            - json: "$.id"
+              as: eventId
+    flow:
+      - post:
+          url: "/auth/login"
+          json:
+            username: "{{ username }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.token"
+              as: customerToken
+      - post:
+          url: "/tickets/?eventId={{ eventId }}"
+          headers:
+            Authorization: "Bearer {{ customerToken }}"
+          expect:
+            - statusCode: 201

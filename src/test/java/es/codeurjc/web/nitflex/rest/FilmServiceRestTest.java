@@ -32,7 +32,7 @@ public class FilmServiceRestTest {
 
     @BeforeEach
     public void setup() {
-        userRepository.save(new User("Test User", "test@gmail.com"));
+        userRepository.save(new User("user1", "test@gmail.com"));
         RestAssured.baseURI = BASE_URL + port;
     }
 
