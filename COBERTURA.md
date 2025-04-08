@@ -1,7 +1,7 @@
 # Informe de cobertura
 
 Este informe presenta los resultados de la cobertura de código obtenida tras la ejecución de las pruebas utilizando JaCoCo.
-La cobertura total obtenida es del 46% en cuanto concierne a las (ignorando 912 de 1712 instrucciones), y de un 36% en las ramas (ignorando 46 de 72 ramas lógicas).
+La cobertura total obtenida es del 46% en cuanto concierne a las instrucciones (ignorando 912 de 1712 instrucciones), y de un 36% en las ramas (ignorando 46 de 72 ramas lógicas).
 
 ### ¿Qué clases/métodos crees que faltan por cubrir con pruebas? 
 Habría que cubrir los métodos de otros servicios como ReviewService o FavoriteFlmService, ya que ambos osn susceptibles a crear errores si se tocan los modelos debido a que tiene relaciones basadas en los repositorios y utilizan DTOs.

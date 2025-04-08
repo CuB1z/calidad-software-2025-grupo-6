@@ -79,7 +79,7 @@ public class FilmServiceE2ETest {
         assertThat(driver.findElement(By.id("film-synopsis")).getText()).isEqualTo(description);
         assertThat(driver.findElement(By.id("film-title")).getText()).isEqualTo(title);
         assertThat(driver.findElement(By.id("film-releaseYear")).getText()).isEqualTo(String.valueOf(releaseYear));
-        //TODO: add id to agerequirement and check, ask michel
+        assertThat(driver.findElement(By.id("age-requirement")).getText()).isEqualTo(ageRating);
     }
 
     /**
