@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,14 +33,8 @@ public class FilmServiceIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    //private List<User> usersThatLikeFilms;
     @Autowired
     private FilmRepository filmRepository;
-
-    @BeforeEach
-    public void setup(){
-
-    }
 
 
     /**

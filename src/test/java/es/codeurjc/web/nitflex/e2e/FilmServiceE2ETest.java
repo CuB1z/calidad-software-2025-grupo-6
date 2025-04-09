@@ -96,6 +96,7 @@ public class FilmServiceE2ETest {
         //Then
         wait.until(presenceOfElementLocated(By.id("new-film")));
         assertNotNull(driver.findElement(By.id("error-list")), "There is no error message");
+        
         // Go to the main page
         driver.get(BASE_URL + this.port + "/");
         wait.until(presenceOfElementLocated(By.id("film-list")));
@@ -154,6 +155,14 @@ public class FilmServiceE2ETest {
 
     }
 
+    /**
+     * Helper method to add a film to the form
+     * 
+     * @param title
+     * @param description
+     * @param releaseYear
+     * @param ageRating
+     */
     private void addFilmToForm(String title, String description, int releaseYear, String ageRating) {
         driver.findElement(By.name("title")).sendKeys(title);
         WebElement element = driver.findElement(By.name("releaseYear"));
@@ -164,6 +173,11 @@ public class FilmServiceE2ETest {
         driver.findElement(By.id("Save")).click();
     }
 
+    /**
+     * Helper method to get the list of films
+     * 
+     * @return List of films
+     */
     private List<WebElement> getFilms() {
         return driver.findElements(By.className("film-title"));
     }

@@ -31,38 +31,20 @@ public class FilmServiceRestTest {
     private int port;
 
     @BeforeEach
-    public void setup() {
+    public void setUp() {
         userRepository.save(new User("user1", "test@gmail.com"));
         RestAssured.baseURI = BASE_URL + port;
     }
 
     /**
-     * When a new film is added without an image, we expect that the image is obtainable through its id
+     * 1. When a new film is added without an image, we expect that the image is obtainable through its id
      */
     @Test
     public void testAddFilmWithoutImage() {
         // Create a new film
-        JSONObject newFilm = new JSONObject();
-        newFilm.put("title", "New Film Title");
-        newFilm.put("synopsis", "This is a synopsis of the new film.");
-        newFilm.put("releaseYear", 2025);
-        newFilm.put("ageRating", "+18");
+        JSONObject newFilm = createNewFilm("New Film Title");
 
-        // Verify the film was created
-        Integer filmId = RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(newFilm.toJSONString())
-            .when()
-                .post("/api/films/")
-            .then()
-                .statusCode(201)
-                .body("title", Matchers.equalTo(newFilm.get("title")))
-                .body("synopsis", Matchers.equalTo(newFilm.get("synopsis")))
-                .body("releaseYear", Matchers.equalTo(newFilm.get("releaseYear")))
-                .body("ageRating", Matchers.equalTo(newFilm.get("ageRating")))
-                .extract()
-                .path("id");
+        Integer filmId = verifyFilmCreation(newFilm);
 
         // Verify the film is obtainable through its id
         RestAssured
@@ -84,13 +66,8 @@ public class FilmServiceRestTest {
      */
     @Test
     public void testAddFilmWithoutTitle() {
-
         // Create a new film
-        JSONObject newFilm = new JSONObject();
-        newFilm.put("title", "");
-        newFilm.put("synopsis", "This is a synopsis of the new film.");
-        newFilm.put("releaseYear", 2025);
-        newFilm.put("ageRating", "+18");
+        JSONObject newFilm = createNewFilm("");
 
         // Verify the film was created
         RestAssured
@@ -110,29 +87,10 @@ public class FilmServiceRestTest {
      */
     @Test
     public void testAddAndEditFilm() {
-
         // Create a new film
-        JSONObject newFilm = new JSONObject();
-        newFilm.put("title", "New Film Title");
-        newFilm.put("synopsis", "This is a synopsis of the new film.");
-        newFilm.put("releaseYear", 2025);
-        newFilm.put("ageRating", "+18");
+        JSONObject newFilm = createNewFilm("New Film Title");
 
-        // Verify the film was created
-        Integer filmId = RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(newFilm.toJSONString())
-            .when()
-                .post("/api/films/")
-            .then()
-                .statusCode(201)
-                .body("title", Matchers.equalTo(newFilm.get("title")))
-                .body("synopsis", Matchers.equalTo(newFilm.get("synopsis")))
-                .body("releaseYear", Matchers.equalTo(newFilm.get("releaseYear")))
-                .body("ageRating", Matchers.equalTo(newFilm.get("ageRating")))
-                .extract()
-                .path("id");
+        Integer filmId = verifyFilmCreation(newFilm);
 
         // Edit the film
         FilmSimpleDTO updatedFilm = new FilmSimpleDTO(
@@ -161,29 +119,10 @@ public class FilmServiceRestTest {
      */
     @Test
     public void testAddAndDeleteFilm() {
-
         // Create a new film
-        JSONObject newFilm = new JSONObject();
-        newFilm.put("title", "New Film Title");
-        newFilm.put("synopsis", "This is a synopsis of the new film.");
-        newFilm.put("releaseYear", 2025);
-        newFilm.put("ageRating", "+18");
+        JSONObject newFilm = createNewFilm("New Film Title");
 
-        // Verify the film was created
-        Integer filmId = RestAssured
-            .given()
-                .contentType(ContentType.JSON)
-                .body(newFilm.toJSONString())
-            .when()
-                .post("/api/films/")
-            .then()
-                .statusCode(201)
-                .body("title", Matchers.equalTo(newFilm.get("title")))
-                .body("synopsis", Matchers.equalTo(newFilm.get("synopsis")))
-                .body("releaseYear", Matchers.equalTo(newFilm.get("releaseYear")))
-                .body("ageRating", Matchers.equalTo(newFilm.get("ageRating")))
-                .extract()
-                .path("id");
+        Integer filmId = verifyFilmCreation(newFilm);
 
         // Delete the film
         RestAssured
@@ -202,5 +141,43 @@ public class FilmServiceRestTest {
                 .get("/api/films/" + filmId)
             .then()
                 .statusCode(404);
+    }
+
+    /**
+     * Helper method to create a new film
+     * 
+     * @param title
+     * @return newFilm
+     */
+    private JSONObject createNewFilm(String title) {
+        JSONObject newFilm = new JSONObject();
+        newFilm.put("title", title);
+        newFilm.put("synopsis", "This is a synopsis of the new film.");
+        newFilm.put("releaseYear", 2025);
+        newFilm.put("ageRating", "+18");
+        return newFilm;
+    }
+
+    /**
+     * Helper method to verify the film creation
+     * 
+     * @param newFilm
+     * @return filmId
+     */
+    private Integer verifyFilmCreation(JSONObject newFilm) {
+        return RestAssured
+            .given()
+                .contentType(ContentType.JSON)
+                .body(newFilm.toJSONString())
+            .when()
+                .post("/api/films/")
+            .then()
+                .statusCode(201)
+                .body("title", Matchers.equalTo(newFilm.get("title")))
+                .body("synopsis", Matchers.equalTo(newFilm.get("synopsis")))
+                .body("releaseYear", Matchers.equalTo(newFilm.get("releaseYear")))
+                .body("ageRating", Matchers.equalTo(newFilm.get("ageRating")))
+                .extract()
+                .path("id");
     }
 }
