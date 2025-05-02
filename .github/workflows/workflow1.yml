@@ -1,0 +1,25 @@
+name: Test Non-Main Branches
+
+on:
+  push:
+    branches-ignore:
+      - main
+    paths-ignore:
+      - '.github/**'
+      - 'README.md'
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - name: Run Unit Tests
+        run: mvn test -Dtest=FilmServiceUnitTest
+      - name: Run Integration Tests
+        run: mvn test -Dtest=FilmServiceIntegrationTest
