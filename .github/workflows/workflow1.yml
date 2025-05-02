@@ -5,19 +5,20 @@ on:
     branches-ignore:
       - main
     paths-ignore:
-      - '**/README.md'
-      - '.github/workflows/**'
+      - '.github/**'
+      - 'README.md'
   workflow_dispatch:
 
 jobs:
-  test:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          distribution: 'temurin'
+          java-version: '11'
       - name: Run Unit Tests
         run: mvn test -Dtest=FilmServiceUnitTest
       - name: Run Integration Tests
