@@ -14,6 +14,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
+
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +47,9 @@ public class FilmServiceE2ETest {
 
     @BeforeEach
     public void setUp() {
-        driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        driver = new ChromeDriver(options);
         wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         User user = new User("username", "mail");
         userRepository.save(user);
