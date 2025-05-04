@@ -1,0 +1,16 @@
+config:
+  target: "http://localhost:8080/api"
+
+  tls:
+    rejectUnauthorized: false
+
+  plugins:
+    expect: {}
+  
+scenarios:
+  - name: "Health Check"
+    flow:
+      - get:
+          url: "/films/"
+          expect:
+            - statusCode: 200
