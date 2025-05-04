@@ -65,8 +65,7 @@ jobs:
     needs: deploy
     steps:
       - name: 'Install Artillery'
-      - run: npm install -g artillery
+        run: npm install -g artillery
     
       - name: 'Run Artillery test'
-        run: |
-          artillery run smoketest.yml
+        run: artillery run smoketest.yml
