@@ -132,7 +132,7 @@ public class FilmServiceE2ETest {
     }
 
     /**
-     * 4. When a new film is added and edited to add '- part 2' to its title, we check that the change has been applied
+     *  4. When a new film is added and edited to add '- part 2' to its title, we check that the change has been applied
      */
     @Test
     public void testEditFilm() {
