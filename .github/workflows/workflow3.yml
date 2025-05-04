@@ -59,3 +59,14 @@ jobs:
             --os-type Linux \
             --cpu 1 \
             --memory 1.5 \
+    
+  healthcheck:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: 'Install Artillery'
+      - run: npm install -g artillery
+    
+      - name: 'Run Artillery test'
+        run: |
+          artillery run smoketest.yml
