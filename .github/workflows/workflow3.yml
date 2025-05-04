@@ -29,11 +29,11 @@ jobs:
         id: get_version
         run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
       - name: Generate Docker image
-        run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ secrets.DOCKERHUB_USERNAME }}/posts:${{ steps.get_version.outputs.version }}
+        run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ steps.get_version.outputs.version }}
       - name: Login to DockerHub
         run: docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}" 
       - name: Push image to DockerHub
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/posts:${{ steps.get_version.outputs.version }}
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ steps.get_version.outputs.version }}
         
   deploy:
     runs-on: ubuntu-latest
@@ -49,12 +49,12 @@ jobs:
         run: |
           az container create \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --name posts \
-            --image ${{ secrets.DOCKERHUB_USERNAME }}/posts:${{ needs.build.outputs.version }} \
+            --name nitflex \
+            --image ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ needs.build.outputs.version }} \
             --registry-login-server index.docker.io \
             --registry-username ${{ secrets.DOCKERHUB_USERNAME }} \
             --registry-password ${{ secrets.DOCKERHUB_READ_TOKEN }} \
-            --dns-name-label posts-${{ secrets.DOCKERHUB_USERNAME }} \
+            --dns-name-label nitflex-${{ secrets.DOCKERHUB_USERNAME }} \
             --ports 8080 \
             --os-type Linux \
             --cpu 1 \
