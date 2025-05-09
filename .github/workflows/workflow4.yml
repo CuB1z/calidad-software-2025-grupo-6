@@ -52,14 +52,17 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Run tests (excluding smoke and multibrowser)
-        run: mvn test
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ github.sha }} .
-      - name: DockerHub login
-        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-      - name: Push Docker image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ github.sha }}
+      - name: Run tests
+        run: mvn test      
+      - name: Extract project version
+        id: get_version
+        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+      - name: Generate Docker image
+        run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ steps.get_version.outputs.version }}
+      - name: Login to DockerHub
+        run: docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}" 
+      - name: Push image to DockerHub
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ steps.get_version.outputs.version }}
       - name: Azure CLI login
         uses: azure/login@v2
         with:
