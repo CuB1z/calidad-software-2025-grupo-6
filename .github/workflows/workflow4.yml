@@ -78,7 +78,11 @@ jobs:
             --registry-login-server index.docker.io \
             --registry-username ${{ secrets.DOCKERHUB_USERNAME }} \
             --registry-password ${{ secrets.DOCKERHUB_TOKEN }} \
-            --ports 8080
+            --ports 8080 \
+            --os-type Linux \
+            --cpu 1 \
+            --memory 1.5
+            
       - name: Install Artillery
         run: npm install -g artillery
       - name: Run smoke test
