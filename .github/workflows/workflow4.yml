@@ -39,8 +39,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Prueba sistema web [${{ matrix.browser }} / ${{ matrix.os }}]
-        run: mvn verify -Dtest=MultibrowserWebSystemTest -Dbrowser=${{ matrix.browser }} -Dos=${{ matrix.os }}
+      - name: Web system test [${{ matrix.browser }} / ${{ matrix.os }}]
+        run: mvn test -Dtest="FilmServiceUnitTest,FilmServiceIntegrationTest" -Dbrowser=${{ matrix.browser }} -Dos=${{ matrix.os }}
 
   loadtesting:
     name: loadtesting
@@ -52,21 +52,21 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Ejecutar tests (sin smoke ni multibrowser)
-        run: mvn verify -DskipSmokeTest -DskipMultibrowserTests
-      - name: Construir imagen Docker
+      - name: Run tests (excluding smoke and multibrowser)
+        run: mvn test
+      - name: Build Docker image
         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ github.sha }} .
-      - name: Login DockerHub
+      - name: DockerHub login
         run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-      - name: Publicar imagen Docker
+      - name: Push Docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ github.sha }}
-      - name: Login Azure CLI
+      - name: Azure CLI login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: Desplegar en Azure (staging)
+      - name: Deploy to Azure (staging)
         run: |
           az container create \
             --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
@@ -76,11 +76,11 @@ jobs:
             --registry-username ${{ secrets.DOCKERHUB_USERNAME }} \
             --registry-password ${{ secrets.DOCKERHUB_TOKEN }} \
             --ports 8080
-      - name: Instalar Artillery
+      - name: Install Artillery
         run: npm install -g artillery
-      - name: Ejecutar smoke test
+      - name: Run smoke test
         run: artillery run smoketest.yml
-      - name: Ejecutar prueba de carga
+      - name: Run load test
         run: artillery run loadtest.yml
 
   release-nightly:
@@ -89,11 +89,11 @@ jobs:
     needs: [multibrowser, loadtesting]
     steps:
       - uses: actions/checkout@v3
-      - name: Establecer tag nightly
-        run: echo "TAG=nightly$(date +'%Y%m%d')" >> $GITHUB_ENV
-      - name: Construir imagen nightly
+      - name: Set nightly tag
+        run: echo "TAG=nightly-$(date +'%Y%m%d')" >> $GITHUB_ENV
+      - name: Build nightly image
         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ env.TAG }} .
-      - name: Login DockerHub
+      - name: DockerHub login
         run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-      - name: Publicar imagen nightly
+      - name: Push nightly image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ env.TAG }}
