@@ -70,4 +70,4 @@ jobs:
         run: npm install -g artillery
     
       - name: 'Run Artillery test'
-        run: artillery run smoketest.yml
+        run: artillery run smoke-test.yml

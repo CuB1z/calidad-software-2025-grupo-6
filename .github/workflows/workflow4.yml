@@ -56,7 +56,7 @@ jobs:
         run: mvn test      
       - name: Extract project version
         id: get_version
-        run: echo "commit=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+        run: echo "${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
       - name: Generate Docker image
         run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ steps.get_version.outputs.version }}
       - name: Login to DockerHub
@@ -86,7 +86,7 @@ jobs:
       - name: Install Artillery
         run: npm install -g artillery
       - name: Run smoke test
-        run: artillery run smoketest.yml
+        run: artillery run smoke-test.yml
       - name: Run load test
         run: artillery run load-test.yml
 
