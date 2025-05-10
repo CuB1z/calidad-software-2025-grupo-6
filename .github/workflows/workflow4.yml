@@ -103,7 +103,7 @@ jobs:
           java-version: '21'
       - name: Set nightly tag
         id: get_version
-        run: echo "version=nightly-$(date +'%Y%m%d')" >> $GITHUB_ENV
+        run: echo "version=nightly-$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
       - name: Build nightly image
         run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ steps.get_version.outputs.version }}
       - name: DockerHub login
