@@ -56,7 +56,7 @@ jobs:
         run: mvn test      
       - name: Extract project version
         id: get_version
-        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+        run: echo "commit=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
       - name: Generate Docker image
         run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ steps.get_version.outputs.version }}
       - name: Login to DockerHub
@@ -88,7 +88,7 @@ jobs:
       - name: Run smoke test
         run: artillery run smoketest.yml
       - name: Run load test
-        run: artillery run loadtest.yml
+        run: artillery run load-test.yml
 
   release-nightly:
     name: Publicar artefacto nightly
