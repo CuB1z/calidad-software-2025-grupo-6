@@ -97,10 +97,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set nightly tag
-        run: echo "TAG=nightly-$(date +'%Y%m%d')" >> $GITHUB_ENV
+        id: get_version
+        run: echo "version=nightly-$(date +'%Y%m%d')" >> $GITHUB_ENV
       - name: Build nightly image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ env.TAG }} .
+        run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ steps.get_version.outputs.version }}
       - name: DockerHub login
-        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+        run: docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}" 
       - name: Push nightly image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ env.TAG }}
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nitflex:${{ steps.get_version.outputs.version }}
