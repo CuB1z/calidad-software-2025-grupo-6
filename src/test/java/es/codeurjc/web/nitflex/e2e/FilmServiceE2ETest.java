@@ -156,7 +156,23 @@ public class FilmServiceE2ETest {
         wait.until(presenceOfElementLocated(By.id("film-list")));
         assertTrue(getFilms().stream().anyMatch(film -> film.getText().equals(title + addToTittle)), 
                 "Film title should be updated");
+    }
 
+    /**
+     * 5. When "Cancel" is clicked in the film creation form, we expect to be redirected to the main page (Films list)
+     */
+    @Test
+    public void testCancelFilmCreation() {
+        // Given
+        driver.get(BASE_URL + this.port + "/films/new");
+
+        // When
+        driver.findElement(By.id("cancel-btn")).click();
+
+        // Then
+        wait.until(presenceOfElementLocated(By.id("film-list")));
+        assertTrue(driver.getCurrentUrl().equals(BASE_URL + this.port + "/"), 
+                   "Should be redirected to the main page");
     }
 
     /**
