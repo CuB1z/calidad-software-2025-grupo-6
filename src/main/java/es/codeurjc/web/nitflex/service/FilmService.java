@@ -68,12 +68,18 @@ public class FilmService {
 		if (film.title() == null || film.title().isEmpty()) {
 			throw new IllegalArgumentException("The title is empty");
 		}
+		if (film.releaseYear()<1895){
+			throw new IllegalArgumentException("No film was made before 1895");
+		}
 		Film newFilm = filmMapper.toDomain(film);
 		newFilm.setPosterFile(imageField);
 		return filmMapper.toDTO(filmRepository.save(newFilm));
 	}
 
 	public FilmDTO save(CreateFilmRequest film, MultipartFile imageField) {
+		if (film.releaseYear()<1895){
+			throw new IllegalArgumentException("No film was made before 1895");
+		}
 		if (imageField != null && imageField.getSize() > 0) {
 			return this.save(film, imageUtils.multiPartFileImageToBlob(imageField));
 		}
@@ -81,6 +87,9 @@ public class FilmService {
 	}
 
 	public FilmDTO save(CreateFilmRequest film) {
+		if (film.releaseYear()<1895){
+			throw new IllegalArgumentException("No film was made before 1895");
+		}
 		return this.save(film, (Blob) null);
 	}
 

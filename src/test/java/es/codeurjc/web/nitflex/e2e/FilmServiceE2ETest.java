@@ -156,7 +156,45 @@ public class FilmServiceE2ETest {
         wait.until(presenceOfElementLocated(By.id("film-list")));
         assertTrue(getFilms().stream().anyMatch(film -> film.getText().equals(title + addToTittle)), 
                 "Film title should be updated");
+    }
 
+    /**
+     * 5. When "Cancel" is clicked in the film creation form, we expect to be redirected to the main page (Films list)
+     */
+    @Test
+    public void testCancelFilmCreation() {
+        // Given
+        driver.get(BASE_URL + this.port + "/films/new");
+
+        // When
+        driver.findElement(By.id("cancel-btn")).click();
+
+        // Then
+        wait.until(presenceOfElementLocated(By.id("film-list")));
+        assertTrue(driver.getCurrentUrl().equals(BASE_URL + this.port + "/"), 
+                   "Should be redirected to the main page");
+    }
+
+    /**
+     * 5. When a film from before 1895 is added, its not added
+     */
+    @Test
+    public void testAddFilmBefore1895() {
+        // Given
+        driver.get(BASE_URL + this.port + "/films/new");
+
+        // When
+        addFilmToForm("Title", "Description", 1894, "+18");
+
+        // Then
+        wait.until(presenceOfElementLocated(By.id("new-film")));
+        assertNotNull(driver.findElement(By.id("error-list")), "There is no error message");
+
+        // Go to the main page
+        driver.get(BASE_URL + this.port + "/");
+        wait.until(presenceOfElementLocated(By.id("film-list")));
+        assertTrue(getDates().stream().allMatch(date -> !date.getText().equals("Released in 1894")),
+                   "Film with release year before 1895 should not be present in the list");
     }
 
     /**
@@ -184,5 +222,9 @@ public class FilmServiceE2ETest {
      */
     private List<WebElement> getFilms() {
         return driver.findElements(By.className("film-title"));
+    }
+
+    private List<WebElement> getDates() {
+        return driver.findElements(By.className("date"));
     }
 }
