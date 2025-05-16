@@ -144,8 +144,7 @@ public class Film {
     public boolean equals(Object o){
         if(o == null) return false;
         if(o == this) return true;
-        if(o instanceof Film){
-            Film f = (Film) o;
+        if(o instanceof Film f){
             return f.getId().equals(this.id);
         }
         return false;

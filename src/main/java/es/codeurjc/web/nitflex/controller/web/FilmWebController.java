@@ -34,6 +34,12 @@ import jakarta.validation.Valid;
 @Controller
 public class FilmWebController {
 
+	private static final String REDIRECT_FILMS = "redirect:/films/";
+	private static final String FILM_FORM = "filmForm";
+	private static final String ACTION_MSG = "action";
+	public static final String FILM_NOT_FOUND = "Film not found";
+	public static final String ERROR_MSG = "error";
+
 	@Autowired
 	private FilmService filmService;
 
@@ -61,7 +67,7 @@ public class FilmWebController {
 			model.addAttribute("isInFavorites", favoriteFilmService.isFavorite(film));
 			return "film";
 		}else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Film not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, FILM_NOT_FOUND);
 		}
 		
 	}
@@ -73,21 +79,21 @@ public class FilmWebController {
 		if(op.isPresent()) {
 			filmService.delete(id);
 			FilmDTO removedFilm = op.get();
-			model.addAttribute("error", false);
+			model.addAttribute(ERROR_MSG, false);
 			model.addAttribute("message", "Film '"+removedFilm.title()+"' deleted");
 			return "message";
 		}else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Film not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, FILM_NOT_FOUND);
 		}
 		
 	}
 	
 	@GetMapping("/films/new")
 	public String newFilm(Model model) {
-		model.addAttribute("action", "/films/new");
+		model.addAttribute(ACTION_MSG, "/films/new");
 		model.addAttribute("film", new Film());
 		model.addAttribute("ageRatings", AgeRating.values());
-		return "filmForm";
+		return FILM_FORM;
 	}
 	
 	@PostMapping("/films/new")
@@ -98,14 +104,14 @@ public class FilmWebController {
 		try{
 			newFilm = filmService.save(film, imageField);
 		}catch(IllegalArgumentException e){
-			model.addAttribute("error", true);
+			model.addAttribute(ERROR_MSG, true);
 			model.addAttribute("errors", List.of(e.getMessage()));
-			model.addAttribute("action", "/films/new");
+			model.addAttribute(ACTION_MSG, "/films/new");
 			model.addAttribute("film", film);
-			return "filmForm";
+			return FILM_FORM;
 		}
 		
-		return "redirect:/films/" + newFilm.id();
+		return REDIRECT_FILMS + newFilm.id();
 	}
 	
 	@GetMapping("/films/{id}/edit")
@@ -114,12 +120,12 @@ public class FilmWebController {
 		Optional<FilmDTO> op = filmService.findOne(id);
 		if(op.isPresent()) {
 			FilmDTO film = op.get();
-			model.addAttribute("action", "/films/"+id+"/edit");
+			model.addAttribute(ACTION_MSG, "/films/"+id+"/edit");
 			model.addAttribute("film", film);
 			model.addAttribute("ageRatings", AgeRatingOptionsUtils.getAgeRatingOptions(film.ageRating()));
-			return "filmForm";
+			return FILM_FORM;
 		}else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Film not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, FILM_NOT_FOUND);
 		}
 		
 	}
@@ -132,16 +138,16 @@ public class FilmWebController {
 		try{
 			updatedFilm = filmService.update(id, film, imageField);
 		}catch(ResponseStatusException e){
-			model.addAttribute("error", true);
+			model.addAttribute(ERROR_MSG, true);
 			model.addAttribute("errors", List.of(e.getReason()));
-			model.addAttribute("action", "/films/"+id+"/edit");
+			model.addAttribute(ACTION_MSG, "/films/"+id+"/edit");
 			model.addAttribute("film", film);
-			return "filmForm";
+			return FILM_FORM;
 		}
 
 		model.addAttribute("film", updatedFilm);
 		
-		return "redirect:/films/" + film.id();
+		return REDIRECT_FILMS + film.id();
 	}
 
 	@GetMapping("/films/{id}/poster")
@@ -160,25 +166,25 @@ public class FilmWebController {
 	@PostMapping("/films/{filmId}/reviews")
 	public String addReview(@PathVariable long filmId, @Valid CreateReviewRequest review) {
 		FilmDTO film = reviewService.addReview(filmId, review);
-		return "redirect:/films/" + film.id();
+		return REDIRECT_FILMS + film.id();
 	}
 
 	@PostMapping("/films/{filmId}/reviews/{reviewId}/remove")
 	public String removeReview(@PathVariable long filmId, @PathVariable long reviewId) {
 		FilmDTO film = reviewService.deleteReview(filmId, reviewId);
-		return "redirect:/films/" + film.id();
+		return REDIRECT_FILMS + film.id();
 	}
 
 	@PostMapping("/films/{filmId}/addFavorite")
 	public String addFavorite(@PathVariable long filmId) {
 		favoriteFilmService.addToFavorites(filmId);
-		return "redirect:/films/" + filmId;
+		return REDIRECT_FILMS + filmId;
 	}
 
 	@PostMapping("/films/{filmId}/removeFavorite")
 	public String removeFavorite(@PathVariable long filmId) {
 		favoriteFilmService.removeFromFavorites(filmId);
-		return "redirect:/films/" + filmId;
+		return REDIRECT_FILMS + filmId;
 	}
 
 }
