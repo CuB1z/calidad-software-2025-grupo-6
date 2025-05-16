@@ -127,4 +127,22 @@ public class FilmServiceUnitTest {
         assertEquals("Film not found with id: " + nonExistentFilmId, exception.getMessage());
         verify(filmRepository, never()).deleteById(nonExistentFilmId);
     }
+
+    /**
+     * 5. When a film from before 1895 is added, an exception is raised
+     */
+    @Test
+    public void testSaveFilmWithYearBefore1895() {
+        // Given
+        CreateFilmRequest film = new CreateFilmRequest("Title", "Description", 1894, "+18");
+
+        // When
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            filmService.save(film);
+        });
+
+        // Then
+        assertEquals("No film was made before 1895", exception.getMessage());
+        verify(filmRepository, never()).save(any(Film.class));
+    }
 }
