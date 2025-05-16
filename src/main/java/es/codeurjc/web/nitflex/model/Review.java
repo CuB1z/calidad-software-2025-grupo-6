@@ -36,7 +36,7 @@ public class Review {
     private Film film;
 
     @CreationTimestamp
-    private Date created_at;
+    private Date createdAt;
 
     public Review(){
         this.id = 0L;
