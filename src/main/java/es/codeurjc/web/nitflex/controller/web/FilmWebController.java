@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 @Controller
 public class FilmWebController {
 
+	private static final String REDIRECT_FILMS = "redirect:/films/";
 	private static final String FILM_FORM = "filmForm";
 	private static final String ACTION_MSG = "action";
 	public static final String FILM_NOT_FOUND = "Film not found";
@@ -110,7 +111,7 @@ public class FilmWebController {
 			return FILM_FORM;
 		}
 		
-		return "redirect:/films/" + newFilm.id();
+		return REDIRECT_FILMS + newFilm.id();
 	}
 	
 	@GetMapping("/films/{id}/edit")
@@ -146,7 +147,7 @@ public class FilmWebController {
 
 		model.addAttribute("film", updatedFilm);
 		
-		return "redirect:/films/" + film.id();
+		return REDIRECT_FILMS + film.id();
 	}
 
 	@GetMapping("/films/{id}/poster")
@@ -165,25 +166,25 @@ public class FilmWebController {
 	@PostMapping("/films/{filmId}/reviews")
 	public String addReview(@PathVariable long filmId, @Valid CreateReviewRequest review) {
 		FilmDTO film = reviewService.addReview(filmId, review);
-		return "redirect:/films/" + film.id();
+		return REDIRECT_FILMS + film.id();
 	}
 
 	@PostMapping("/films/{filmId}/reviews/{reviewId}/remove")
 	public String removeReview(@PathVariable long filmId, @PathVariable long reviewId) {
 		FilmDTO film = reviewService.deleteReview(filmId, reviewId);
-		return "redirect:/films/" + film.id();
+		return REDIRECT_FILMS + film.id();
 	}
 
 	@PostMapping("/films/{filmId}/addFavorite")
 	public String addFavorite(@PathVariable long filmId) {
 		favoriteFilmService.addToFavorites(filmId);
-		return "redirect:/films/" + filmId;
+		return REDIRECT_FILMS + filmId;
 	}
 
 	@PostMapping("/films/{filmId}/removeFavorite")
 	public String removeFavorite(@PathVariable long filmId) {
 		favoriteFilmService.removeFromFavorites(filmId);
-		return "redirect:/films/" + filmId;
+		return REDIRECT_FILMS + filmId;
 	}
 
 }
