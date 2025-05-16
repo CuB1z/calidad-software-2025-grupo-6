@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ public class FilmService {
 		try {
 			return blob.getBinaryStream();
 		} catch (SQLException e) {
-			throw new RuntimeException("Error getting image from database", e);
+			throw new NoSuchElementException("Error getting image from database", e);
 		}
 	}
 
