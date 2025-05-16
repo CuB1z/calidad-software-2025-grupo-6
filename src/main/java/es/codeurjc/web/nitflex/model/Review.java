@@ -72,8 +72,8 @@ public class Review {
         this.score = score;
     }
 
-    public Date getCreated_at() {
-        return created_at;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
     public User getUser() {
