@@ -33,7 +33,7 @@ public class AgeRatingOptionsUtils {
 					ageRating.getDescription(), 
 					ageRating.getDescription().equals(selectedAgeRating)
 			))
-			.collect(Collectors.toList());
+			.toList();
     }
     
 }
