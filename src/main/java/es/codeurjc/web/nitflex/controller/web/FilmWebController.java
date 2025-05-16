@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 @Controller
 public class FilmWebController {
 
+	private static final String ACTION_MSG = "action";
 	public static final String FILM_NOT_FOUND = "Film not found";
 	public static final String ERROR_MSG = "error";
 
@@ -87,7 +88,7 @@ public class FilmWebController {
 	
 	@GetMapping("/films/new")
 	public String newFilm(Model model) {
-		model.addAttribute("action", "/films/new");
+		model.addAttribute(ACTION_MSG, "/films/new");
 		model.addAttribute("film", new Film());
 		model.addAttribute("ageRatings", AgeRating.values());
 		return "filmForm";
@@ -103,7 +104,7 @@ public class FilmWebController {
 		}catch(IllegalArgumentException e){
 			model.addAttribute(ERROR_MSG, true);
 			model.addAttribute("errors", List.of(e.getMessage()));
-			model.addAttribute("action", "/films/new");
+			model.addAttribute(ACTION_MSG, "/films/new");
 			model.addAttribute("film", film);
 			return "filmForm";
 		}
@@ -117,7 +118,7 @@ public class FilmWebController {
 		Optional<FilmDTO> op = filmService.findOne(id);
 		if(op.isPresent()) {
 			FilmDTO film = op.get();
-			model.addAttribute("action", "/films/"+id+"/edit");
+			model.addAttribute(ACTION_MSG, "/films/"+id+"/edit");
 			model.addAttribute("film", film);
 			model.addAttribute("ageRatings", AgeRatingOptionsUtils.getAgeRatingOptions(film.ageRating()));
 			return "filmForm";
@@ -137,7 +138,7 @@ public class FilmWebController {
 		}catch(ResponseStatusException e){
 			model.addAttribute(ERROR_MSG, true);
 			model.addAttribute("errors", List.of(e.getReason()));
-			model.addAttribute("action", "/films/"+id+"/edit");
+			model.addAttribute(ACTION_MSG, "/films/"+id+"/edit");
 			model.addAttribute("film", film);
 			return "filmForm";
 		}
