@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
 public class FilmWebController {
 
 	public static final String FILM_NOT_FOUND = "Film not found";
+	public static final String ERROR_MSG = "error";
 
 	@Autowired
 	private FilmService filmService;
@@ -75,7 +76,7 @@ public class FilmWebController {
 		if(op.isPresent()) {
 			filmService.delete(id);
 			FilmDTO removedFilm = op.get();
-			model.addAttribute("error", false);
+			model.addAttribute(ERROR_MSG, false);
 			model.addAttribute("message", "Film '"+removedFilm.title()+"' deleted");
 			return "message";
 		}else {
@@ -100,7 +101,7 @@ public class FilmWebController {
 		try{
 			newFilm = filmService.save(film, imageField);
 		}catch(IllegalArgumentException e){
-			model.addAttribute("error", true);
+			model.addAttribute(ERROR_MSG, true);
 			model.addAttribute("errors", List.of(e.getMessage()));
 			model.addAttribute("action", "/films/new");
 			model.addAttribute("film", film);
@@ -134,7 +135,7 @@ public class FilmWebController {
 		try{
 			updatedFilm = filmService.update(id, film, imageField);
 		}catch(ResponseStatusException e){
-			model.addAttribute("error", true);
+			model.addAttribute(ERROR_MSG, true);
 			model.addAttribute("errors", List.of(e.getReason()));
 			model.addAttribute("action", "/films/"+id+"/edit");
 			model.addAttribute("film", film);
