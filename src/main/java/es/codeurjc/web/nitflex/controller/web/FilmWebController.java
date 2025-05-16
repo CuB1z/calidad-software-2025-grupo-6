@@ -34,6 +34,8 @@ import jakarta.validation.Valid;
 @Controller
 public class FilmWebController {
 
+	public static final String FILM_NOT_FOUND = "Film not found";
+
 	@Autowired
 	private FilmService filmService;
 
@@ -61,7 +63,7 @@ public class FilmWebController {
 			model.addAttribute("isInFavorites", favoriteFilmService.isFavorite(film));
 			return "film";
 		}else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Film not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, FILM_NOT_FOUND);
 		}
 		
 	}
@@ -77,7 +79,7 @@ public class FilmWebController {
 			model.addAttribute("message", "Film '"+removedFilm.title()+"' deleted");
 			return "message";
 		}else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Film not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, FILM_NOT_FOUND);
 		}
 		
 	}
@@ -119,7 +121,7 @@ public class FilmWebController {
 			model.addAttribute("ageRatings", AgeRatingOptionsUtils.getAgeRatingOptions(film.ageRating()));
 			return "filmForm";
 		}else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Film not found");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, FILM_NOT_FOUND);
 		}
 		
 	}
