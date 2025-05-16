@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 @Controller
 public class FilmWebController {
 
+	private static final String FILM_FORM = "filmForm";
 	private static final String ACTION_MSG = "action";
 	public static final String FILM_NOT_FOUND = "Film not found";
 	public static final String ERROR_MSG = "error";
@@ -91,7 +92,7 @@ public class FilmWebController {
 		model.addAttribute(ACTION_MSG, "/films/new");
 		model.addAttribute("film", new Film());
 		model.addAttribute("ageRatings", AgeRating.values());
-		return "filmForm";
+		return FILM_FORM;
 	}
 	
 	@PostMapping("/films/new")
@@ -106,7 +107,7 @@ public class FilmWebController {
 			model.addAttribute("errors", List.of(e.getMessage()));
 			model.addAttribute(ACTION_MSG, "/films/new");
 			model.addAttribute("film", film);
-			return "filmForm";
+			return FILM_FORM;
 		}
 		
 		return "redirect:/films/" + newFilm.id();
@@ -121,7 +122,7 @@ public class FilmWebController {
 			model.addAttribute(ACTION_MSG, "/films/"+id+"/edit");
 			model.addAttribute("film", film);
 			model.addAttribute("ageRatings", AgeRatingOptionsUtils.getAgeRatingOptions(film.ageRating()));
-			return "filmForm";
+			return FILM_FORM;
 		}else {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, FILM_NOT_FOUND);
 		}
@@ -140,7 +141,7 @@ public class FilmWebController {
 			model.addAttribute("errors", List.of(e.getReason()));
 			model.addAttribute(ACTION_MSG, "/films/"+id+"/edit");
 			model.addAttribute("film", film);
-			return "filmForm";
+			return FILM_FORM;
 		}
 
 		model.addAttribute("film", updatedFilm);
