@@ -108,7 +108,7 @@ public class Review {
         if (score != review.score) return false;
         if (!text.equals(review.text)) return false;
         if (!user.equals(review.user)) return false;
-        return ((film == null) && (review.film == null)) || film.equals(review.film);
+        return ((film == null) && (review.film == null)) || ((film != null) && (review.film != null) && film.equals(review.film));
     }
 
     @Override
