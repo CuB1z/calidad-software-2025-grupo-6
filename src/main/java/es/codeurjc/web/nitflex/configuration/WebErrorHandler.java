@@ -1,6 +1,7 @@
 package es.codeurjc.web.nitflex.configuration;
 
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,7 +26,12 @@ public class WebErrorHandler {
 		modelAndView.addObject("error", true);
 
 		if(ex instanceof MethodArgumentNotValidException manvExp){
-			modelAndView.addObject(MESSAGE, manvExp.getFieldError().getDefaultMessage());
+			FieldError fieldError = manvExp.getFieldError();
+			if(fieldError != null) {
+				modelAndView.addObject(MESSAGE, fieldError.getDefaultMessage());
+			} else {
+				modelAndView.addObject(MESSAGE, "Invalid input provided");
+			}
 		}else{
 			modelAndView.addObject(MESSAGE, ex.getMessage());
 		}
