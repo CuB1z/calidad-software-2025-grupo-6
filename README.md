@@ -10,6 +10,22 @@
 
 ---
 
+## URL del repositorio del grupo
+[GitHub](https://github.com/CuB1z/calidad-software-2025-grupo-6)
+
+---
+
+## URL de la aplicación desplegada en Azure
+
+
+---
+
+## Capturas de pantalla
+
+---
+
+# Práctica 1: Pruebas de software
+
 ## Tarea 1: Implementación de pruebas unitarias
 
 | Tarea | Autor | Commit |
@@ -60,3 +76,36 @@
 
 ---
 
+# Práctica 2: Implementación de Pipelines de CI-CD
+
+## Tarea 1: Preparación del repositorio
+
+| Tarea | Autor | Commit |
+| :---- | :---- | :----- |
+| 1.1 | David Pimentel y Pablo Requejo | [Enlace](https://github.com/CuB1z/calidad-software-2025-grupo-6/commit/4727c2ee42af20679d6894640d0c47abdf59d2a5) |
+| 1.2 | David Pimentel y Pablo Requejo | [Enlace](https://github.com/CuB1z/calidad-software-2025-grupo-6/commit/8ccb772ba25e2314bb44ab9621838c6420eeb8dc) |
+
+## Tarea 2: Definición de flujos de trabajo
+
+| Tarea | Autor | Commit |
+| :---- | :---- | :----- |
+| 2.1 | Pablo Requejo | [Enlace](https://github.com/CuB1z/calidad-software-2025-grupo-6/commit/3a3e265ed8c30bc5e370efdf61bf20f16de656d6) |
+| 2.2 | Pablo Requejo | [Enlace](https://github.com/CuB1z/calidad-software-2025-grupo-6/commit/1e58600b455bb8585201a2839e3e52bf4cbc236b) |
+| 2.3 | Diego Sánchez | [Enlace](https://github.com/CuB1z/calidad-software-2025-grupo-6/commit/001126fb8276c79f2dc0b1cc16f0783e5d27e24d) |
+| 2.4 | David Pimentel | [Enlace](https://github.com/CuB1z/calidad-software-2025-grupo-6/commit/67f72ef6c68b6c6ba5d321a22ab96c943ad3367b) |
+
+## Tarea 3: Desarrollo colaborativo con GitHubFlow
+
+| Tarea | Autor | Commit |
+| :---- | :---- | :----- |
+| 3.1 | David Pimentel | [Enlace](https://github.com/CuB1z/calidad-software-2025-grupo-6/commit/d712fe4a286763e7429cbfe405a8aca4862a908f) |
+| 3.2 | Pablo Requejo | [Enlace](https://github.com/CuB1z/calidad-software-2025-grupo-6/commit/c5cebfcc4e69d96897f5a92b2905ceced23a9129) |
+| 3.3 | Diego Sánchez | [Enlace](https://github.com/CuB1z/calidad-software-2025-grupo-6/commit/ad059d31a0470e9f0a56c7b1108d783b5d15d145) |
+
+---
+
+# Pasos seguidos en la práctica
+
+## Tarea 1: Preparación del repositorio
+
+Para la tarea 1, se subieron los cambios directamente a la rama main
